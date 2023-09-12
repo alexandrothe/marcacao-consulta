@@ -1,0 +1,70 @@
+/* header styles */
+
+header{
+    font-family: 'poppins';
+
+}
+
+.header-content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding: 10px;
+    background-color: rgb(108, 153, 108);
+}
+.header-logo-container{
+    flex:.7;
+}
+.header-logo-container a{
+    font-size: 12px;
+    text-decoration: none;
+}
+.header-ellipse-container{
+    flex:.3;
+
+    display: flex;
+    justify-content: end;
+}
+.more-icon-btn{
+    width: 40px;
+    height: 40px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+
+
+.list-consulta{
+    padding: 0 5px;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.solicitar-consulta-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 7px;
+
+    background-color: red;
+    text-decoration: none;
+    color: white;
+
+    width: 200px;
+    height: 40px;
+    border-radius: 2px;
+
+    margin: auto; /* remove later */
+}
+.plus-icon-btn{
+    background-color: inherit;
+
+}

@@ -1,0 +1,85 @@
+
+
+/* consulta item styles */
+
+.consulta-item-container{
+    border: 1px solid rgb(184, 184, 184);
+
+    border-radius: 8px;
+
+}
+.consulta-item-ruler{
+    height: 1px;
+    background-color: rgb(184, 184, 184);
+}
+
+/* consulta item header styles */
+.consulta-item-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    padding: 10px 0;
+
+}
+.consulta-title-container{
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+
+.consulta-date-container{
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+.consulta-date-container .consulta-date{
+    font-size: 12px;
+}
+
+/* consulta item body styles */
+.consulta-item-body{
+    padding: 7px;
+}
+.consulta-item-body .consulta-info {
+    text-align: justify;
+    font-size: 14px;
+}
+.doctor-container{
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+
+    margin-top: 10px;
+}
+
+
+
+/* consulta item bottom styles */
+.consulta-item-bottom{
+    display: flex;
+    justify-content: space-evenly;
+
+    padding: 10px 0;
+}
+.consulta-item-btn{
+    height: 35px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.posicao-btn{
+    background-color: blue;
+    color: white;
+    font-weight: 600;
+}
+.cancelar-btn{
+    background-color: rgb(236, 50, 17);
+    font-weight: 600;
+    color: white;
+}
