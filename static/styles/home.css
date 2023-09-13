@@ -1,70 +1,40 @@
-/* header styles */
 
-header{
-    font-family: 'poppins';
 
+
+main{
+    padding: 20px 10px;
 }
 
-.header-content{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+.consulta-container{
+    max-width: calc( (250px * 4) + 30px);
+    width: 270px;
+    margin: 0 auto;
+}
+
+.consulta-container-header{
+    margin-bottom: 10px;
+}
+.consulta-container-header p{
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+
+.consulta-container-body{
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, minmax(250px, max-content)); */
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+@media screen and (min-width: 545px) {
+    .consulta-container{
+        width: 100%;
+    }
+    .consulta-container-body{
+        grid-template-columns: repeat(auto-fit, minmax(250px, max-content));
+    }
     
-    padding: 10px;
-    background-color: rgb(108, 153, 108);
-}
-.header-logo-container{
-    flex:.7;
-}
-.header-logo-container a{
-    font-size: 12px;
-    text-decoration: none;
-}
-.header-ellipse-container{
-    flex:.3;
-
-    display: flex;
-    justify-content: end;
-}
-.more-icon-btn{
-    width: 40px;
-    height: 40px;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-
-
-.list-consulta{
-    padding: 0 5px;
-
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px;
-}
-
-.solicitar-consulta-btn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    column-gap: 7px;
-
-    background-color: red;
-    text-decoration: none;
-    color: white;
-
-    width: 200px;
-    height: 40px;
-    border-radius: 2px;
-
-    margin: auto; /* remove later */
-}
-.plus-icon-btn{
-    background-color: inherit;
-
 }

@@ -1,0 +1,39 @@
+header{
+    background-color: rgb(108, 153, 108);
+    font-family: 'poppins';
+}
+.header-content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding: 10px; /* remove on @meida query min-width: 545px or beonde*/
+    max-width: 1230px;
+    margin: 0 auto;
+}
+.header-logo-container{
+    flex:.7;
+}
+.header-logo-container a{
+    font-size: 12px;
+    text-decoration: none;
+}
+.header-ellipse-container{
+    flex:.3;
+
+    display: flex;
+    justify-content: end;
+}
+.more-icon-btn{
+    width: 40px;
+    height: 40px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+
