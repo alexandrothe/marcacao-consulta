@@ -41,8 +41,11 @@ header{
 }
 
 @media screen and (min-width: 545px) {
+    header{
+        padding: 10px 20px;
+    }
     .header-content{
-        padding: 10px 0;
+        padding: 0;
     }
 
     .header-ellipse-container{

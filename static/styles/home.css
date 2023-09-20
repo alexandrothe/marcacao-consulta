@@ -7,9 +7,8 @@ main{
 
 
 .consulta-container{
-    max-width: calc( (250px * 4) + 30px);
-    width: 270px;
     margin: 0 auto;
+    max-width: 1256px;
 }
 
 .consulta-container-header{
@@ -23,21 +22,29 @@ main{
 
 
 .consulta-container-body{
-    display: grid;
-    /* grid-template-columns: repeat(auto-fit, minmax(250px, max-content)); */
+    display: flex;
+    flex-wrap: wrap;
     row-gap: 10px;
     column-gap: 10px;
 }
+.consulta-item-container{
+    flex-grow: 1;
+    flex-basis: calc(50% - 10px);
+}
 
-
-
-
-@media screen and (min-width: 545px) {
-    .consulta-container{
-        width: 100%;
+@media screen  and (min-width: 436px){
+    .consulta-item-container{
+        flex-grow: 0;
     }
-    .consulta-container-body{
-        grid-template-columns: repeat(auto-fit, minmax(250px, max-content));
+}
+@media screen and (min-width: 690px){
+    .consulta-item-container{
+        flex-basis: calc(33.33% - 10px);
     }
-    
+}
+
+@media screen and (min-width: 963px){
+    .consulta-item-container{
+        flex-basis: calc(25% - 10px);
+    }
 }
