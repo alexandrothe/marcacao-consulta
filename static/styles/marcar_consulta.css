@@ -1,0 +1,53 @@
+#marcar-consulta-form{
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+
+/* marcar consulta form item styles */
+.marcar-consulta-form-item{
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+.marcar-consulta-form-item > select{
+    height: 40px;
+}
+
+
+
+
+
+/* styles for the checkbox prioridades */
+.consulta-form-checkbox-list{
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+.consulta-form-checkbox-list > label{
+    font-size: 15px;
+    font-weight: 400;
+}
+.consulta-form-checkbox-list > input{
+    scale: .8;
+}
+
+/* styles for button form #marcar-consulta-form */
+
+.marcar-consulta-form-buttons button{
+    width: 100px;
+    height: 35px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+
+    cursor: pointer;
+}
+.marcar-consulta-form-buttons button:first-child{
+    background-color: red;
+}
+.marcar-consulta-form-buttons button:last-child{
+    background-color: rgb(22, 177, 22);
+}

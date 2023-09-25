@@ -4,7 +4,7 @@ const consultaContainerBody = document.querySelector('.consulta-container-body')
 let content = "";
 
 
-for (let i = 0; i < 15 ;i++){
+for (let i = 0; i < 8 ;i++){
     content += `
     <div class="consulta-item-container">
         <div class="consulta-item-header">
