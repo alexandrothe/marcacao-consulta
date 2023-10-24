@@ -3,7 +3,10 @@ import { Sequelize, DataTypes } from "sequelize";
 
 const database = new Sequelize({
     dialect: "sqlite",
-    storage: "./data.db"
+    storage: "./data.db",
+    define:{
+        freezeTableName:true
+    }
 });
 
 
@@ -30,7 +33,8 @@ const Usuario = database.define('Usuario', {
     nome: {
         type: DataTypes.STRING,
         allowNull:false,
-    }
+    },
+   
 });
 
 const TipoUsuario = database.define('TipoUsuario', {
@@ -114,3 +118,96 @@ const Especialidade = database.define('Especialidade', {
         allowNull:false
     }
 });
+
+
+TipoUsuario.hasMany(Usuario);
+Usuario.belongsTo(TipoUsuario);
+
+
+Usuario.hasMany(SolicitacaoConsulta);
+SolicitacaoConsulta.belongsTo(Usuario);
+
+Especialidade.hasMany(Medico);
+Medico.belongsTo(Especialidade);
+
+SolicitacaoConsulta.hasOne(AgendamentoSolicitacao);
+AgendamentoSolicitacao.belongsTo(SolicitacaoConsulta);
+
+Medico.hasMany(SolicitacaoConsulta);
+SolicitacaoConsulta.belongsTo(Medico);
+
+Especialidade.hasMany(SolicitacaoConsulta);
+SolicitacaoConsulta.belongsTo(Especialidade);
+
+
+async function insertData(){
+    const agendamento1 = {
+        dtConsulta: '01/02/2005',
+        hrConsulta: '12:23:56',
+        dtAgendamento: "",
+        hrAgendamento: "",
+        UsuarioId:1,
+        EspecialidadeId: 3,
+        MedicoId: 3
+    }
+    const agendamento2 = {
+        dtConsulta: '01/02/1555',
+        hrConsulta: '00:00:00',
+        dtAgendamento: "",
+        hrAgendamento: "",
+        UsuarioId:1,
+        EspecialidadeId: 1,
+        MedicoId: 1,
+    }
+    const agendamento3 = {
+        dtConsulta: '01/02/2051',
+        hrConsulta: '00:03:56',
+        dtAgendamento: "",
+        hrAgendamento: "",
+        UsuarioId:1,
+        EspecialidadeId: 2,
+        MedicoId: 2
+    }
+
+    await SolicitacaoConsulta.create(agendamento1);
+    await SolicitacaoConsulta.create(agendamento2);
+    await SolicitacaoConsulta.create(agendamento3);
+}
+async function getData(){
+
+    const data = await Medico.findAll({
+        where: { id:3},
+        include:[
+            {model: SolicitacaoConsulta, include:[Usuario]}
+        ]
+    });
+
+    data.forEach((item) => {
+        const nomeCliente = item.toJSON().nome;
+        
+        console.log('Medico Name: ',nomeCliente);
+        item.toJSON().SolicitacaoConsulta.forEach( item => {
+            console.log('Paciente Name: ',item.Usuario.nome);
+        })
+    });
+}
+
+( async () => {
+    // const tipoUsuario = [{nome: "paciente"}, {nome: 'Medico'}]
+    // await TipoUsuario.bulkCreate(tipoUsuario);
+
+    // const especialidades= [{nome: "Destista"},{nome: "Ortopedista"},{nome:"Cirurgião"}];
+    // await Especialidade.bulkCreate(especialidades);
+
+
+    // insertData()
+
+    // Testes Relacoes:
+    // TipoUsuario e Usario   ( One to Many )   : OK
+    // Medico e Especialidade ( One to Many )   : OK
+    // SolicitacarConsulte e Medico, Usuario e Especialidade (One to Many): OK
+
+    // getData();
+
+
+})();
