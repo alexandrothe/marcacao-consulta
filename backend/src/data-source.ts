@@ -15,4 +15,5 @@ export const AppDataSource = new DataSource({
     entities: [ Usuario, Medico, Especialidade, TipoUsuario, AgendamentoConsulta, SolicitacaoConsulta ],
     migrations: [],
     subscribers: [],
+    
 })
