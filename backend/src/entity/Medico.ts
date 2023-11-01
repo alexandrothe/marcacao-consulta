@@ -9,10 +9,10 @@ export class Medico {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column('varchar')
     crm: string
 
-    @Column()
+    @Column('varchar')
     nome: string
 
     @ManyToOne( () => Especialidade, (especialidade) => especialidade.medico )

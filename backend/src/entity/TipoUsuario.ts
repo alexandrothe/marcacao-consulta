@@ -7,7 +7,7 @@ export class TipoUsuario {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column('varchar')
     nome: string
 
     @OneToMany(() => Usuario, (user) => user.tipoUsuario)

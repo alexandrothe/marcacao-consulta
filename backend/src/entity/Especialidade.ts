@@ -9,7 +9,7 @@ export class Especialidade{
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column('varchar')
     nome: string
 
     @OneToMany( () => Medico, (medico) => medico.especialidade)

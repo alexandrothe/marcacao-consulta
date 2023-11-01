@@ -1,15 +1,29 @@
 
 import { AppDataSource } from "./data-source";
-import { Usuario } from "./entity/Usuario";
-import { TipoUsuario } from "./entity/TipoUsuario";
-import { Especialidade } from "./entity/Especialidade";
-import { Medico } from "./entity/Medico";
-import { SolicitacaoConsulta } from "./entity/SolicitacaoConsulta";
+import express, { Request, Response, NextFunction} from "express"
+import {notFoundErrorHandler, asyncErrorHandler } from './middlewares/errorHandler';
+import userRouter from "./routes/user.router";
 
 AppDataSource.initialize()
-    .then(async () => {
-       console.log("data source has been initialized");
+.then(async () => {
+   console.log('AppDatasource has been initialized')
+})
+.catch(error => console.log(error));
 
-    })
-    .catch(error => console.log(error));
+const app = express();
 
+
+// MIDDLEWARES
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
+// ROUTES
+app.use('/api/user', userRouter);
+
+
+// ERROR HANDLER
+app.use(notFoundErrorHandler);
+app.use(asyncErrorHandler);
+
+
+app.listen(4000)
