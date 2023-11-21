@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn} from "typeorm"
 import { TipoUsuario } from "./TipoUsuario"
-import { AgendamentoConsulta } from "./AgendamentoConsulta"
 import { SolicitacaoConsulta } from "./SolicitacaoConsulta"
 
 @Entity()
@@ -12,10 +11,15 @@ export class Usuario {
     @Column('varchar')
     nome: string
 
-    @ManyToOne(() => TipoUsuario, (tipo) => tipo.usuario )
+    @Column({ type: 'integer' })
+    tipoUsuarioId: number
+
+    @ManyToOne(() => TipoUsuario, (tipo) => tipo.usuario)
+    @JoinColumn({ name: "tipoUsuarioId"})
     tipoUsuario: TipoUsuario
 
     @OneToMany( () => SolicitacaoConsulta, (solicitacao) => solicitacao.usuario)
     solicitacao: SolicitacaoConsulta[]
+
     
 }

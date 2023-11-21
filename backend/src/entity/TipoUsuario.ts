@@ -13,4 +13,5 @@ export class TipoUsuario {
     @OneToMany(() => Usuario, (user) => user.tipoUsuario)
     usuario: Usuario[]
 
+
 }

@@ -5,13 +5,13 @@ import { Usuario } from "../entity/Usuario";
 import { TipoUsuario } from "../entity/TipoUsuario";
 
 
-
 interface UserInterface {
     nome: string
     idade?: number
     senha?: string
     tipoUsuario: number
 }
+
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
 
