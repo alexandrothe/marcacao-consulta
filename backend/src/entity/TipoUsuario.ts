@@ -10,7 +10,7 @@ export class TipoUsuario {
     @Column('varchar')
     nome: string
 
-    @OneToMany(() => Usuario, (user) => user.tipoUsuario)
+    @OneToMany(() => Usuario, (user) => user.tipoUsuario, { onDelete: "CASCADE"})
     usuario: Usuario[]
 
 

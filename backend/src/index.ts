@@ -25,12 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 // ROUTES
-app.use('/api/usuario', userRouter);
-app.use('/api/usuario/tipo', tipoUsuarioRouter);
-app.use('/api/especialidade', especialidadeRouter);
-app.use('/api/medico', medicoRouter);
-app.use('/api/agendamento', agendamentoRouter);
-app.use('/api/solicitacao', solicitacaoRouter);
+app.use('/api/v1/usuario', userRouter);
+app.use('/api/v1/usuario/tipo', tipoUsuarioRouter);
+app.use('/api/v1/especialidade', especialidadeRouter);
+app.use('/api/v1/medico', medicoRouter);
+app.use('/api/v1/agendamento', agendamentoRouter);
+app.use('/api/v1/solicitacao', solicitacaoRouter);
 
 
 // ERROR HANDLER

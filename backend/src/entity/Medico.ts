@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm"
 import { Especialidade } from "./Especialidade"
 import { SolicitacaoConsulta } from "./SolicitacaoConsulta"
 
@@ -15,7 +15,11 @@ export class Medico {
     @Column('varchar')
     nome: string
 
+    @Column({ type: "number"})
+    especialidadeId: number
+
     @ManyToOne( () => Especialidade, (especialidade) => especialidade.medico )
+    @JoinColumn({ name: "especialidadeId"})
     especialidade: Especialidade
 
     @OneToMany( () => SolicitacaoConsulta, (solicitacao) => solicitacao.medico)
