@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn} from "typeorm"
 import { TipoUsuario } from "./TipoUsuario"
 import { SolicitacaoConsulta } from "./SolicitacaoConsulta"
+import { AgendamentoConsulta } from "./AgendamentoConsulta"
 
 @Entity()
 export class Usuario {
@@ -20,6 +21,9 @@ export class Usuario {
 
     @OneToMany( () => SolicitacaoConsulta, (solicitacao) => solicitacao.usuario)
     solicitacao: SolicitacaoConsulta[]
+
+    @OneToMany( () => AgendamentoConsulta, ( agendamento) => agendamento.usuario)
+    agendamentos: AgendamentoConsulta[]
 
     
 }

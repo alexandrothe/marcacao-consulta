@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne, JoinColumn } from "typeorm"
+import { Usuario } from "./Usuario"
+import { SolicitacaoConsulta } from "./SolicitacaoConsulta"
 
 
 
@@ -8,15 +10,23 @@ export class AgendamentoConsulta{
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ type: "date" })
-    dtConsulta: Date
+    @Column({ type: "integer" })
+    usuarioId: number
 
-    @Column({ type: "time" })
-    hrConsulta: string
+    @Column({ type: "integer" })
+    solicitacaoId: number
 
-    @Column({ type: "date" })
+    @Column({ type: "date", nullable: false, default: () => "CURRENT_DATE"})
     dtAgendamento: Date
-
-    @Column({ type: "time" })
+    
+    @Column({ type: "time", nullable: false, default: () => "CURRENT_TIME" })
     hrAgendamento: string
+    
+    @OneToOne( () => SolicitacaoConsulta, ( solicitacao) => solicitacao.agendamento)
+    @JoinColumn({ name: "solicitacaoId" })
+    solicitacao: SolicitacaoConsulta
+
+    @ManyToOne( () => Usuario, (user) => user.agendamentos)
+    @JoinColumn({ name: "usuarioId" })
+    usuario: Usuario
 }

@@ -1,16 +1,115 @@
 import {Request, Response, NextFunction} from "express";
 import { AppDataSource } from "../data-source";
-import { AgendamentoConsulta } from "../entity/AgendamentoConsulta";
-import { Usuario } from "../entity/Usuario";
-import { Medico } from "../entity/Medico";
-import { Especialidade } from "../entity/Especialidade";
+import { SolicitacaoConsulta } from "../entity/SolicitacaoConsulta";
 
-const agendamentoRepo = AppDataSource.getRepository(AgendamentoConsulta)
-const usuarioRepo = AppDataSource.getRepository(Usuario);
-const medicoRepo = AppDataSource.getRepository(Medico);
-const especialidadeRepo = AppDataSource.getRepository(Especialidade);
+const solicitacaoRepo = AppDataSource.getRepository(SolicitacaoConsulta);
 
-export const createSolicitacao = async (req:Request, res: Response, next:NextFunction) => {}
-export const deleteSolicitacao = async (req:Request, res: Response, next:NextFunction) => {}
-export const udpateSolicitacao = async (req:Request, res: Response, next:NextFunction) => {}
-export const getSolicitacao = async (req:Request, res: Response, next:NextFunction) => {}
+export const createSolicitacao = async (req:Request, res: Response, next:NextFunction) => {
+    const { especialidadeId, medicoId, usuarioId } = <SolicitacaoConsulta>req.body;
+
+    try{
+
+        const solicitacao = new SolicitacaoConsulta();
+        solicitacao.especialidadeId = especialidadeId;
+        solicitacao.usuarioId = usuarioId;
+        solicitacao.medicoId = medicoId;
+
+        await solicitacaoRepo.save(solicitacao);
+
+        res.json({
+            ok:true,
+            solictacao: solicitacao,
+        });
+
+    }catch(err){
+        next(err);
+    }
+    
+}
+export const deleteSolicitacao = async (req:Request, res: Response, next:NextFunction) => {
+
+    const { id } = req.params;
+
+
+    try{
+        const solicitacaoToDelete = await solicitacaoRepo.delete({ id: parseInt(id) });
+
+        res.json({ ok: true });
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+export const udpateSolicitacao = async (req:Request, res: Response, next:NextFunction) => {
+
+    const { id } = req.params;
+  
+
+    try{
+
+        const solicitacaoUpdate = await solicitacaoRepo.update({id: parseInt(id)},{...req.body});
+
+        res.json({
+            ok:true,
+            solicitacao: solicitacaoUpdate
+        });
+
+
+    }catch(err){
+        next(err);
+    }
+
+}
+export const getSolicitacao = async (req:Request, res: Response, next:NextFunction) => {
+    const { id } = req.params;
+
+    try{
+
+        const solicitacao = await solicitacaoRepo.findOne({
+            where: { id: parseInt(id) },
+            relations:{
+                medico:true,
+                especialidade:true,
+                usuario:true
+            }
+        });
+
+        if(!solicitacao){
+            res.status(404).json({
+                ok:false,
+                message: "solicitação não encontrada"
+            });
+        }
+        else{
+            res.json({
+                ok:true,
+                solicitacao: solicitacao
+            })
+        }
+
+    }catch(err){
+        next(err);
+    }
+}
+
+
+export const getSolicitacaoList = async (req:Request, res: Response, next:NextFunction) => {
+
+    try{
+
+        const solicitacaoList = await solicitacaoRepo.find({
+            relations:{
+                medico:true,
+                usuario:true,
+                especialidade:true
+            }
+        });
+
+        res.json({ ok: true, solicitacaoes: solicitacaoList });
+
+    }catch(err){
+        next(err);
+    }
+}
+

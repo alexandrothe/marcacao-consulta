@@ -8,6 +8,8 @@ import { solicitacaoRouter } from "./routes/solicitacao.router";
 import { medicoRouter } from "./routes/medico.router";
 import { especialidadeRouter } from "./routes/especialidade.router";
 import { tipoUsuarioRouter } from "./routes/tipoUsuario.router";
+import cors from "cors";
+
 
 AppDataSource.initialize()
 .then(async () => {
@@ -21,6 +23,11 @@ const app = express();
 
 
 // MIDDLEWARES
+app.use(cors({
+   origin: ['http://localhost:5173/'],
+   methods: ["GET", "POST", "DELETE", "PUT"]
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
