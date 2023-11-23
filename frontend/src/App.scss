@@ -1,0 +1,53 @@
+.solicitacao-item-container{
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+
+  max-width: 300px;
+  border: 1px solid black;
+
+  padding: 5px;
+
+  .solicitacao-item-header{
+
+  }
+
+  .solicitacao-item-information{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+    .solicitacao-info-medico{
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+    .solicitacao-info-data{
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .solicitacao-info-situacao{
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+  }
+
+  .solicitacao-item-buttons{
+
+    display: flex;
+    justify-content: end;
+    column-gap: 10px;
+                           
+    .update-solicitacao-btn,
+    .delete-solicitacao-btn{
+      width: 70px;
+      padding: 4px 0;
+      text-align: center;
+    }
+  }
+
+}
