@@ -1,12 +1,12 @@
 @import "../../mixins";
 
-.register-page-main{
+.login-page-main{
     height: 100%;
 
 
     padding-top: 30px;
-    .register-page-section{
-
+    .login-page-section{
+     
         height: 100%;
         padding: 0 20px;
         margin: 0 auto;
@@ -17,32 +17,35 @@
 
         margin-bottom: 20px;
 
-        .register-section-header{
+        .login-section-header{
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             width: 100%;
             max-width: 400px;
         }
-        .register-section-body{
+
+        .login-section-body{
             width: 100%;
             max-width: 400px;
-            .register-form{
 
+            .login-form{
                 display: flex;
                 flex-direction: column;
-                row-gap: 20px;
+                row-gap: 15px;
 
-                .register-form-item{
+                .login-form-item{
                     display: flex;
                     flex-direction: column;
                     row-gap: 10px;
-                    
+                
                     input, select{
                         height: 40px;
-                        border-radius: 5px;
-                        border: 1px solid rgb(156, 152, 152);
-                        padding: 10px;
+                        border: 1px solid silver;
                         font-size: 18px;
+                        font-family: 'Roboto', sans-serif;
+                        padding: 5px;
+                        border-radius: 5px;
+
 
                         &:focus{
                             outline: none;
@@ -53,39 +56,41 @@
                         font-size: 14px;
                     }
 
-                    .register-form-password{
+                    .login-form-password{
                         display: grid;
-                        grid-template-columns: calc(100% - 50px) 50px;
+                        grid-template-columns: calc(100% - 55px) 55px;
                         border: 1px solid rgb(156, 152, 152);
-                        
+
+                        border-radius: 5px;
+
                         input{
                             border: none;
                         }
 
-                        .register-password-icon{
+                        .login-password-icon{
                             display: flex;
                             align-items: center;
                             justify-content: center;
 
                             cursor: pointer;
                             font-size: 20px;
-
                         }
                     }
-                  
                 }
 
-                .register-form-button{
-                    .register-form-btn{
+                .login-form-button{
+                    .login-form-btn{
                         @include button_base($bg-color: green);
                         width: 100%;
                         max-width: 400px;
                         font-size: 18px;
-                        border-radius: 4px;
+                        border-radius: 5px;
                     }
                 }
-                .register-form-bottom{
-                    a{text-decoration: underline;}
+                .login-form-bottom{
+                    a{
+                        text-decoration: underline;
+                    }
                 }
             }
         }
