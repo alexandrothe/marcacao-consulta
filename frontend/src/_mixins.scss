@@ -1,0 +1,29 @@
+@mixin button_base($bg-color: rgb(0, 0, 0)){
+    width: 70px;
+    height: 40px;
+    text-align: center;
+    background-color: $bg-color;
+    color: rgb(255, 255, 255);
+    border: none;
+    font-size: 15px;
+    cursor: pointer; 
+}
+
+
+@mixin header_style(){
+    color: rgb(7, 63, 161);
+    display: flex;
+    align-items: center;
+
+    height: 20px;
+
+
+    &::before{
+        content: "";
+        width: 5px;
+        height: 100%;
+        background-color: rgb(3, 61, 135);
+        display: block;
+        margin-right: 10px;
+    }
+}
