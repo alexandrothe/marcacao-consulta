@@ -1,0 +1,92 @@
+.solicitacao-item-container{
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  
+    border: 1px solid black;
+  
+  
+    .solicitacao-item-header{
+      padding: 7px 5px;
+      text-align: center;
+  
+      background-color: rgb(60, 154, 254);
+      color: white;
+      
+      h3{
+        font-size: 18px;
+        line-height: 1.4;
+      }
+    }
+  
+    .solicitacao-item-information{
+      display: flex;
+      flex-direction: column;
+      row-gap: 10px;
+      padding: 5px;
+  
+      .solicitacao-info-medico{
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+      }
+      .solicitacao-info-data{
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+      }
+  
+      .solicitacao-info-situacao{
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+  
+        h4{
+          font-size: 17px;
+        }
+  
+        p{
+          font-size: 17px;
+        }
+        p.analise{
+          color: rgb(254, 74, 74);
+          text-decoration: underline;
+        }
+        p.agendamento{
+          color: rgb(0, 154, 0);
+          text-decoration: underline;
+        }
+      }
+  
+    }
+  
+    .solicitacao-item-buttons{
+      display: flex;
+      justify-content: end;
+      column-gap: 10px;
+      padding: 5px;
+  
+      @mixin button_base($bg-color: rgb(0, 0, 0)){
+        width: 70px;
+        height: 40px;
+        text-align: center;
+        background-color: $bg-color;
+        color: rgb(255, 255, 255);
+        border: none;
+        font-size: 15px;
+        cursor: pointer; 
+      }
+                             
+      .update-solicitacao-btn{
+        @include button_base($bg-color: rgb(6, 111, 197));
+        border-radius: 4px;
+      }
+  
+      .delete-solicitacao-btn{
+        @include button_base($bg-color: red);
+        border-radius: 4px;
+  
+      }
+    }
+  
+  }
