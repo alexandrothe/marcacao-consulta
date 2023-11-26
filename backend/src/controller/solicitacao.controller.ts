@@ -5,7 +5,7 @@ import { SolicitacaoConsulta } from "../entity/SolicitacaoConsulta";
 const solicitacaoRepo = AppDataSource.getRepository(SolicitacaoConsulta);
 
 export const createSolicitacao = async (req:Request, res: Response, next:NextFunction) => {
-    const { especialidadeId, medicoId, usuarioId } = <SolicitacaoConsulta>req.body;
+    const { especialidadeId, medicoId, description, usuarioId } = <SolicitacaoConsulta>req.body;
 
     try{
 
@@ -13,6 +13,7 @@ export const createSolicitacao = async (req:Request, res: Response, next:NextFun
         solicitacao.especialidadeId = especialidadeId;
         solicitacao.usuarioId = usuarioId;
         solicitacao.medicoId = medicoId;
+        solicitacao.description = description;
 
         await solicitacaoRepo.save(solicitacao);
 
@@ -97,8 +98,12 @@ export const getSolicitacao = async (req:Request, res: Response, next:NextFuncti
 export const getSolicitacaoList = async (req:Request, res: Response, next:NextFunction) => {
 
     try{
-
+        const { userId } = req.params;
+        
         const solicitacaoList = await solicitacaoRepo.find({
+            where:{
+                usuarioId: parseInt(userId)
+            },
             relations:{
                 medico:true,
                 usuario:true,

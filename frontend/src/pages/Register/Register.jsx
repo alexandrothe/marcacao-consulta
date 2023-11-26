@@ -1,15 +1,70 @@
 import { LuEye, LuEyeOff, LuSearch } from "react-icons/lu";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { checkForm } from "../../utils/checkForm";
 import "./Register.scss";
 
+
 export default function Register(){
-
     const [ isPassowrdVisible, setIsPasswordVisible] = useState(false);
-    const [ tipoUsuario, setTipoUsuario ] = useState("paciente");
+    const [ formError, setFormError ] = useState({ target: "", message: ""});
+    const [especialidades, setEspecialidades] = useState([]);
+    const [ tipoUsuario, setTipoUsuario ] = useState(1);
     const [ usuario, SetUsuario] = useState({
-        fullName: "", birthDay: "", sex: "", cardNumber: "", crmCode: "", password: ""
+        name: "", birthDay: "", sex: "", accessCredential: "", password: "", especialidadeId: ""
     });
+    const navigate = useNavigate();
 
+    const handlerRequest = async() => {
+        let formatedData = {}
+
+        const { accessCredential, especialidadeId, ...restUsuario} = usuario;
+        // desctructuring accessCredential for (paciente and Medico) and especialidadeId ( only for Medico),
+        // the rest data is both for medico and paciente
+
+        if(tipoUsuario === 1){
+            // check if the user is login as Paciente, if yes, remove the especialiadeId and change accessCredential to cardNumber
+            formatedData = {...restUsuario, cardNumber: accessCredential}
+        }
+        else{
+            // check if the user is login as Medico, if yes, add the especialiadeId and change accessCredential to crmNumber
+            formatedData = {...restUsuario, crmCode: accessCredential, especialidadeId: especialidadeId}
+        }
+
+
+        const isFormOK = checkForm(formatedData, setFormError);
+        
+        if(isFormOK){
+            const createUserRequest = await fetch(`http://localhost:4000/api/v1/${ tipoUsuario ? "usuario" : "medico" }/create`,{
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                method: "POST",
+                body: JSON.stringify(formatedData)
+            });
+    
+            const createUserResponse = await createUserRequest.json();
+    
+            if(createUserResponse.ok){
+                console.log(createUserResponse);
+                // navigate('/');
+            }
+            else{
+                alert('user could not be created');
+            }
+        }
+
+    }
+
+    async function loadEspecialidades(){
+
+        const especialidadeListRequest = await fetch('http://localhost:4000/api/v1/especialidade/list');
+        const especialidadeListRespose = await especialidadeListRequest.json();
+       
+        if(especialidadeListRespose.ok){
+            setEspecialidades(especialidadeListRespose.especialidades);
+        }
+    }
     return(
         <main className="register-page-main">
             <section className="register-page-section">
@@ -23,10 +78,12 @@ export default function Register(){
                             <label>Nome Completo</label>
                             <input
                                 type="text"
-                                value={usuario.fullName}
-                                onChange={ (e) => SetUsuario( prev => ({ ...prev, fullName: e.target.value}))}
+                                value={usuario.name}
+                                onChange={ (e) => SetUsuario( prev => ({ ...prev, name: e.target.value}))}
                             />
-                            <p>this field can not be emtpy</p>
+                            {formError.target === "name" && (
+                                <p>{formError.message}</p>
+                            )}
                         </div>
 
                         <div className="register-form-item">
@@ -36,43 +93,69 @@ export default function Register(){
                                 value={usuario.birthDay}
                                 onChange={ (e) => SetUsuario( prev => ({ ...prev, birthDay: e.target.value}))}
                             />
-                            <p>this field can not be emtpy</p>
+                            {formError.target === "birthDay" && (
+                                <p>{formError.message}</p>
+                            )}
                         </div>
                         <div className="register-form-item">
                             <label> Gênero: </label>
-                            <select defaultValue={1} onChange={ (e) => SetUsuario( prev => ({ ...prev, sex: e.target.value}))}>
+                            <select onChange={ (e) => SetUsuario( prev => ({ ...prev, sex: e.target.value}))}>
                                 <option>selecione</option>
-                                <option value={1}>homem</option>
-                                <option value={0}>mulher</option>
+                                <option value={"MALE"}>homem</option>
+                                <option value={"FEMALE"}>mulher</option>
                             </select>
                         </div>
                         <div className="register-form-item">
                             <label>Registrar-se como</label>
-                            <select onChange={ (e) => setTipoUsuario(e.target.value)} defaultValue={"paciente"}>
-                                <option value={"paciente"}>Paciente</option>
-                                <option value={"medico"}>Médico</option>
+                            <select  onChange={ (e) => {
+                                setTipoUsuario(parseInt(e.target.value))
+                                if(parseInt(e.target.value) === 0 ){
+                                    loadEspecialidades();
+                                }    
+                            }}>
+                                <option value="">selecione</option>
+                                <option value={1}>Paciente</option>
+                                <option value={0}>Medico</option>
                             </select>
                         </div>
-                        {tipoUsuario === "paciente" ? (
+                        {tipoUsuario === 1 ? (
                             <div className="register-form-item">
                                 <label>Numero do cartão: </label>
                                 <input
                                     type="number"
-                                    value={usuario.cardNumber}
-                                    onChange={ (e) => SetUsuario( prev => ({ ...prev, cardNumber: e.target.value}))}
+                                    value={usuario.accessCredential}
+                                    onChange={ (e) => SetUsuario( prev => ({ ...prev, accessCredential: e.target.value}))}
                                 />
-                                <p>this field can not be emtpy</p>
+                                {formError.target === "accessCredential" && (
+                                    <p>{formError.message}</p>
+                                )}
                             </div>
                         ):(
-                            <div className="register-form-item">
-                                <label>Código CRM: </label>
-                                <input
-                                    type="text"
-                                    value={usuario.crmCode}
-                                    onChange={ (e) => SetUsuario( prev => ({ ...prev, crmCode: e.target.value}))}
-                                />
-                                <p>this field can not be emtpy</p>
-                            </div>
+                            <>
+                                <div className="register-form-item">
+                                    <label>Código CRM: </label>
+                                    <input
+                                        type="text"
+                                        value={usuario.accessCredential}
+                                        onChange={ (e) => SetUsuario( prev => ({ ...prev, accessCredential: e.target.value}))}
+                                    />
+                                    {formError.target === "accessCredential" && (
+                                        <p>{formError.message}</p>
+                                    )}
+                                </div>
+                                <div className="register-form-item">
+                                    <label>Sua especialidade: </label>
+                                    <select onChange={ (e) => SetUsuario( prev => ({...prev, especialidadeId: parseInt(e.target.value )}))}>
+                                        <option>selecione</option>
+                                        {especialidades.map((especialidade, index) => (
+                                            <option value={especialidade.id} key={especialidade.nome}>{especialidade.nome}</option>
+                                        ))}
+                                    </select>
+                                    {formError==="especialidade" && (
+                                        <p>{formError.message}</p>
+                                    )}
+                                </div>
+                            </>
                         )}
 
                         <div className="register-form-item">
@@ -87,11 +170,13 @@ export default function Register(){
                                     {isPassowrdVisible ? <LuEyeOff/> : <LuEye /> }
                                 </div>
                             </div>
-                            <p>this field can not be emtpy</p>
+                            {formError.target === "password" && (
+                                <p>{formError.message}</p>
+                            )}
                         </div>
 
                         <div className="register-form-button">
-                            <button className="register-form-btn" onClick={ () => console.log(usuario)}>
+                            <button className="register-form-btn" onClick={handlerRequest}>
                                 Registrar
                             </button>
                         </div>

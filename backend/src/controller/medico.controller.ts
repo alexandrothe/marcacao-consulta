@@ -4,16 +4,46 @@ import { Medico } from "../entity/Medico";
 
 const medicoRepo = AppDataSource.getRepository(Medico);
 
+export const loginMedico = async(req: Request, res: Response, next: NextFunction) => {
+
+    const {crmCode, password} = <Medico>req.body;
+    
+    try{
+        const medico = await medicoRepo.findOne({
+            where:{
+                crmCode: crmCode,
+                password: password
+            },
+            relations:{
+                especialidade:true,
+            }
+        });
+
+        if(!medico){
+            res.status(404).json({ ok: false, message: "medico not found"});
+        }else{
+            res.json({ ok: true, medico: medico});
+        }
+
+    }
+    catch(err){
+        next(err);
+    }
+}
 
 export const createMedico = async (req:Request, res: Response, next:NextFunction) => {
-    const { crm, nome, especialidadeId } = <Medico>req.body;
+    const { crmCode, name, especialidadeId, sex, birthDay, password} = <Medico>req.body;
 
     try{
 
         const medico = new Medico();
-        medico.crm = crm;
-        medico.nome = nome;
+        medico.crmCode = crmCode;
+        medico.name = name;
         medico.especialidadeId = especialidadeId;
+        medico.birthDay = birthDay;
+        medico.sex = sex;
+        medico.password = password;
+
 
         await medicoRepo.save(medico);
 
@@ -24,6 +54,7 @@ export const createMedico = async (req:Request, res: Response, next:NextFunction
         });
         
     }catch(err){
+        console.log(err)
         next(err);
     }
 }
@@ -57,33 +88,36 @@ export const deleteMedico = async (req:Request, res: Response, next:NextFunction
 export const udpateMedico = async (req:Request, res: Response, next:NextFunction) => {
 
     const { id } = req.params;
-    const { crm, nome, especialidadeId  } = <Medico>req.body;
 
     try{
 
-        const medicoToUpdate = await medicoRepo.update(
-            {id: parseInt(id)},
-            {
-                crm: crm,
-                nome:nome,
-                especialidadeId: especialidadeId
+        const medicoToUpdate = await medicoRepo.findOne({
+            where:{
+                id: parseInt(id)
             }
-        );
+        });
 
-        if(medicoToUpdate){
+        if(!medicoToUpdate){
             res.json({
-                ok:true,
-                message: "Medico Atualizado",
-                medico: medicoToUpdate
+                ok:false,
+                message: "medico not found"
             });
         }
         else{
+
+            await medicoRepo.update({ id: medicoToUpdate.id, crmCode: medicoToUpdate.crmCode },{ ...req.body});
+
+            const updatedMedico = await medicoRepo.findOne({ 
+                where:{
+                    id: medicoToUpdate.id
+                }
+            });
+
             res.json({
-                ok:false,
-                message: "Medico não Atualizado"
+                ok:true,
+                medico: updatedMedico
             })
         }
-
 
     }catch(err){
         next(err);
@@ -94,9 +128,12 @@ export const udpateMedico = async (req:Request, res: Response, next:NextFunction
 export const getMedicoList = async (req:Request, res: Response, next:NextFunction) => {
 
     try{
-
-
+        const {especialidadeId} = req.params;
+        
         const medicoList = await medicoRepo.find({
+            where:{
+                especialidadeId: parseInt(especialidadeId)
+            },
             relations:{
                 especialidade:true
             }

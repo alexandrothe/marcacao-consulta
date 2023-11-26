@@ -4,7 +4,7 @@ import {getSolicitacao, getSolicitacaoList, udpateSolicitacao,deleteSolicitacao,
 export const solicitacaoRouter = express.Router();
 
 solicitacaoRouter.get("/one/:id", getSolicitacao);
-solicitacaoRouter.get("/list", getSolicitacaoList);
+solicitacaoRouter.get("/list/:userId", getSolicitacaoList);
 
 solicitacaoRouter.post("/create", createSolicitacao);
 solicitacaoRouter.put("/update/:id", udpateSolicitacao);

@@ -1,12 +1,12 @@
 import express from "express";
-import { userDelete, getUser, userSingUp, userUpdate } from "../controller/usuario.controller";
+import { userDelete, loginUser, userSingUp, userUpdate } from "../controller/usuario.controller";
 
 
 export const userRouter = express.Router();
 
 
-userRouter.post('/', getUser);
-userRouter.post('/signup', userSingUp );
+userRouter.post('/login', loginUser);
+userRouter.post('/create', userSingUp );
 
-userRouter.put('/update/:id', userUpdate );
-userRouter.delete('/delete/:id', userDelete);
+userRouter.put('/update/:userId', userUpdate );
+userRouter.delete('/delete/:userId', userDelete);

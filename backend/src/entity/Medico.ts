@@ -9,11 +9,20 @@ export class Medico {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('varchar')
-    crm: string
+    @Column({ type: "date" })
+    birthDay: Date
 
     @Column('varchar')
-    nome: string
+    crmCode: string
+
+    @Column('varchar')
+    name: string
+
+    @Column({ type: "varchar"})
+    password: string
+
+    @Column({ type: "varchar"})
+    sex: string
 
     @Column({ type: "number"})
     especialidadeId: number

@@ -1,41 +1,31 @@
 import { Request, Response, NextFunction } from "express";
-import { ResponseError } from "../middlewares/errorHandler";
 import { AppDataSource } from "../data-source";
 import { Usuario } from "../entity/Usuario";
-import { TipoUsuario } from "../entity/TipoUsuario";
 
 
-interface UserInterface {
-    nome: string
-    idade?: number
-    senha?: string
-    tipoUsuario: number
-}
+const usuarioRepo = AppDataSource.getRepository(Usuario);
 
-
-export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
     try{
-        const userId = req.body.userId;
+        const { cardNumber, password }= <Usuario>req.body;
 
-        if( !userId){
-            const noIdReceived =  new ResponseError();
-            noIdReceived.message = 'Id Can not Be Null';
-            noIdReceived.status = 404;
-
-            throw  noIdReceived;
-        }
-
-        const userExist = await AppDataSource.manager.findOneOrFail(Usuario, {
-            where: {
-                id: userId
-            },
-            relations: {
-                tipoUsuario:true
+        const user  = await usuarioRepo.findOne({
+            where:{
+                password: password,
+                cardNumber: cardNumber
             }
         });
-
-        res.json({ok: true, user: userExist})
+    
+        if(!user){
+            res.json({
+                ok: false,
+                message: "User was not found"
+            });
+        }
+        else{
+            res.json({ok: true, user: user});
+        }
     }
     catch(err){
         next(err);
@@ -45,33 +35,17 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 export const userSingUp = async (req: Request, res: Response, next:NextFunction) => {
 
     try{
-        const {nome, idade, senha, tipoUsuario} = <UserInterface>req.body;
-        
-        // get the user type from tipoUsuario
-        const typeOfUser = await AppDataSource.manager
-            .getRepository(TipoUsuario)
-            .createQueryBuilder('tipo_usuario')
-            .where('id = :id ', {id: tipoUsuario})
-            .getOne()
+        const {name, password, birthDay,cardNumber, sex} = <Usuario>req.body;
 
-        // if the tipoUsuari was not found, it wil create a responseError() and throw to the catch block
-        if(typeOfUser == null){
-            const error = new ResponseError();
-            error.message = 'Tipo usuario não encontrado';
-            error.status = 404
 
-            throw error;
-        }
-        
-        const user = await AppDataSource
-            .createQueryBuilder()
-            .insert()
-            .into(Usuario)
-            .values([{
-                nome: nome, tipoUsuario: typeOfUser
-            }])
-            .execute()
+        const user = new Usuario();
+        user.cardNumber = cardNumber;
+        user.birthDay = birthDay;
+        user.password = password;
+        user.sex = sex;
+        user.name = name;
 
+        await usuarioRepo.save(user);
 
         res.status(202).json({ok: true, message: 'User created'});
     }
@@ -81,21 +55,37 @@ export const userSingUp = async (req: Request, res: Response, next:NextFunction)
 }
 
 
-export const userUpdate = async (req: Request, resp: Response, next: NextFunction ) => {
+export const userUpdate = async (req: Request, res: Response, next: NextFunction ) => {
     try{
         
-        const targetId = req.params.id;
-
-        await AppDataSource
-            .createQueryBuilder()
-            .update(Usuario)
-            .set({ ...req.body  })
-            .where("id = :id",{ id: targetId})
-            .execute();
+        const { userId } = req.params;
 
 
-        resp.json({ok:true, message: 'user updated' });
+        const user = await usuarioRepo.findOne({
+            where:{
+                id: parseInt(userId)
+            }
+        });
 
+        if(!user){
+            res.status(404).json({
+                ok:false,
+                message: "User not found"
+            });
+        }
+
+        await usuarioRepo.update(
+            { id: user.id,cardNumber: user.cardNumber }, // criteria
+            {...req.body} // new content
+        );
+
+        const updatedUser = await usuarioRepo.findOne({
+            where:{
+                id: user.id
+            }
+        })
+
+        res.json({ok:true, user: updatedUser});
 
     }
     catch(err){
@@ -103,19 +93,23 @@ export const userUpdate = async (req: Request, resp: Response, next: NextFunctio
     }
 }
 
-export const userDelete = async (req: Request, resp: Response, next: NextFunction) => {
+export const userDelete = async (req: Request, res: Response, next: NextFunction) => {
     
     try{
-        const userIdToDelete = req.params.id;
+        const userIdToDelete = req.params.userId;
         
-        const userDeleted = await AppDataSource
-            .createQueryBuilder()
-            .delete()
-            .from(Usuario)
-            .where('id = :id', { id: userIdToDelete })
-            .execute();
 
-        resp.status(202).json({ok: true, message: 'user deleted'});
+        const userToDelete = await usuarioRepo.findOne({
+            where: { id: parseInt(userIdToDelete) }
+        });
+
+        if(!userToDelete){
+            res.status(404).json({ ok: false, message: "user not found"});
+        }
+
+        await usuarioRepo.delete(userIdToDelete);
+
+        res.status(202).json({ok: true, message: 'user deleted'});
 
     }
     catch(err){

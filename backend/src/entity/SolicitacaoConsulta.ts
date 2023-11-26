@@ -24,6 +24,9 @@ export class SolicitacaoConsulta{
     @Column({ type: "integer"})
     especialidadeId: number
 
+    @Column({ type: "varchar"})
+    description: string
+
     @ManyToOne(() => Usuario, (user) => user.solicitacao)
     usuario: Usuario
 

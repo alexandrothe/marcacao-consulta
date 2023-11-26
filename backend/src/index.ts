@@ -1,4 +1,3 @@
-
 import { AppDataSource } from "./data-source";
 import express from "express";
 import {notFoundErrorHandler, asyncErrorHandler } from './middlewares/errorHandler';
@@ -7,13 +6,11 @@ import { userRouter } from "./routes/user.router";
 import { solicitacaoRouter } from "./routes/solicitacao.router";
 import { medicoRouter } from "./routes/medico.router";
 import { especialidadeRouter } from "./routes/especialidade.router";
-import { tipoUsuarioRouter } from "./routes/tipoUsuario.router";
 import cors from "cors";
-
 
 AppDataSource.initialize()
 .then(async () => {
-   console.log('AppDatasource has been initialized')
+   console.log('AppDatasource has been initialized');
 
 })
 .catch(error => console.log(error));
@@ -33,7 +30,6 @@ app.use(express.urlencoded({extended:true}));
 
 // ROUTES
 app.use('/api/v1/usuario', userRouter);
-app.use('/api/v1/usuario/tipo', tipoUsuarioRouter);
 app.use('/api/v1/especialidade', especialidadeRouter);
 app.use('/api/v1/medico', medicoRouter);
 app.use('/api/v1/agendamento', agendamentoRouter);
