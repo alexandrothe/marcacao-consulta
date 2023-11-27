@@ -16,17 +16,14 @@ export class AgendamentoConsulta{
     @Column({ type: "integer" })
     solicitacaoId: number
 
-    @Column({ type: "date", nullable: false, default: () => "CURRENT_DATE"})
+    @Column({ type: "date", nullable: false})
     dtAgendamento: Date
     
-    @Column({ type: "time", nullable: false, default: () => "CURRENT_TIME" })
-    hrAgendamento: string
-    
-    @OneToOne( () => SolicitacaoConsulta, ( solicitacao) => solicitacao.agendamento)
+    @OneToOne( () => SolicitacaoConsulta, ( solicitacao) => solicitacao.agendamento, { onDelete: "CASCADE"})
     @JoinColumn({ name: "solicitacaoId" })
     solicitacao: SolicitacaoConsulta
 
-    @ManyToOne( () => Usuario, (user) => user.agendamentos)
+    @ManyToOne( () => Usuario, (user) => user.agendamentos, { onDelete: "CASCADE"})
     @JoinColumn({ name: "usuarioId" })
     usuario: Usuario
 }

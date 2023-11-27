@@ -6,11 +6,17 @@
     .profile-page-section{
 
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 15px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         .profile-page-section-header{
 
             margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
 
             h1{
                 @include header_style();
@@ -20,6 +26,8 @@
         .profile-page-section-body{
 
             margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
             .profile-image-form{
 
                 .image-form-item{
@@ -121,6 +129,27 @@
                         }
 
                     }
+
+                    .credentials-form-password{
+                        
+                        display: grid;
+                        grid-template-columns: calc(100% - 55px) 55px;
+
+                        border: 1px solid black;
+                        border-radius: 5px;
+                        input{
+                            border: none;
+                        }
+                        .credentials-password-icon{
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+
+                            font-size: 22px;
+                        }
+                    }
+
                 }
 
                 .credentials-form-button{

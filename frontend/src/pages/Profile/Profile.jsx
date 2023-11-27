@@ -1,5 +1,6 @@
-import { FaPen } from "react-icons/fa"
 import { useEffect, useState } from "react";
+import { FaPen } from "react-icons/fa";
+import { LuEye, LuEyeOff} from "react-icons/lu";
 import { getCookie, setCookie } from "../../utils/cookieManager";
 import { noEmptyKeyValues } from "../../utils/checkForm";
 import "./Profile.scss";
@@ -9,19 +10,24 @@ export default function Profile(){
     const [userInformation, setUserInformation] = useState({
         name: "", password:"", birthDay: "", sex: "", accessCredential: "", 
     });
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [userType, setUserType] = useState("");
 
     useEffect( () => {
-        const {crmCode, cardNumber, ...restUser} = JSON.parse(getCookie('user'));
- 
-        
-        if(crmCode !== undefined){
-            setUserInformation({...restUser, accessCredential: crmCode });
-            setUserType('MEDICO');
-        }
-        else{
-            setUserInformation({...restUser, accessCredential: cardNumber });
-            setUserType("PACIENTE");
+        const userCookie = getCookie('user');
+
+        if(userCookie){
+            const {crmCode, cardNumber, ...restUser} = JSON.parse(userCookie);
+     
+            
+            if(crmCode !== undefined){
+                setUserInformation({...restUser, accessCredential: crmCode });
+                setUserType('MEDICO');
+            }
+            else{
+                setUserInformation({...restUser, accessCredential: cardNumber });
+                setUserType("PACIENTE");
+            }
         }
 
 
@@ -129,12 +135,17 @@ export default function Profile(){
                         )}
                         <div className="credentials-form-item">
                             <label htmlFor="password-input">Password</label>
-                            <input
-                                type="password"
-                                id="password-input"
-                                value={userInformation.password}
-                                onChange={ (e) => setUserInformation( prev => ({ ...prev, password: e.target.value})) }
-                            />
+                            <div className="credentials-form-password">
+                                <input
+                                    type={isPasswordVisible ? "text": "password"}
+                                    id="password-input"
+                                    value={userInformation.password}
+                                    onChange={ (e) => setUserInformation( prev => ({ ...prev, password: e.target.value})) }
+                                />
+                                <div className="credentials-password-icon" onClick={ () => setIsPasswordVisible(prev => !prev)}>
+                                    { isPasswordVisible ? <LuEyeOff /> : <LuEye />}
+                                </div>
+                            </div>
                         </div>
                         <div className="credentials-form-button">
                             <button className="credentials-save-form" onClick={ updateUserHandler}>Salvar informacões</button>

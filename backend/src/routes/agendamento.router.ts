@@ -1,5 +1,11 @@
 import express from "express";
-import {getAgendamento, getAgendamentoList, udpateAgendamento, deleteAgendamento, createAgendamento} from '../controller/agendamento.controller';
+import {
+    getAgendamento,
+    getAgendamentoList,
+    udpateAgendamento,
+    deleteAgendamento,
+    createAgendamento
+} from '../controller/agendamento.controller';
 
 
 

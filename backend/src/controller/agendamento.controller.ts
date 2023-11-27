@@ -6,13 +6,14 @@ const agendamentoRepo = AppDataSource.getRepository(AgendamentoConsulta)
 
 export const createAgendamento = async (req:Request, res: Response, next:NextFunction) => {
 
-    const { solicitacaoId, usuarioId } = <AgendamentoConsulta>req.body;
+    const { solicitacaoId, usuarioId, dtAgendamento} = <AgendamentoConsulta>req.body;
 
     try{
 
         const agendamento = new AgendamentoConsulta();
         agendamento.solicitacaoId = solicitacaoId;
         agendamento.usuarioId = usuarioId;
+        agendamento.dtAgendamento = dtAgendamento;
 
         await agendamentoRepo.save(agendamento);
 

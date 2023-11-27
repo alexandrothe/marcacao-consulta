@@ -10,7 +10,7 @@ export default function MarcarConsulta(){
     const [medicos, setMedicos ] = useState([]);
     const navigate = useNavigate();
     const [marcarConsulta, setMarcarcarConsulta] = useState({
-        especialidadeId: "", medicoId: "", description: "", usuarioId: JSON.parse(getCookie('user')).id
+        especialidadeId: "", medicoId: "", description: "", usuarioId: ""
     });
     
     async function loadMedicos(especialidadeId){
@@ -18,7 +18,6 @@ export default function MarcarConsulta(){
         const medicoListResponse = await medicosListRequest.json();
 
         if(medicoListResponse.ok){
-           console.log(medicoListResponse)
             setMedicos(medicoListResponse.medicos);
         }
     }
@@ -44,18 +43,24 @@ export default function MarcarConsulta(){
     }
 
     useEffect(() => {
+        const userCookie = getCookie('user');
+        
+        if(userCookie){
+            const { id } = JSON.parse(userCookie);
+            setMarcarcarConsulta( prev => ({...prev, usuarioId: id}));
 
-        async function getData(){
-
-            const especialidadesRequest = await fetch('http://localhost:4000/api/v1/especialidade/list');
-            const especialidadeResponse = await especialidadesRequest.json();
-
-            if(especialidadeResponse.ok){
-                setEspecialidades(especialidadeResponse.especialidades);
+            async function getData(){
+    
+                const especialidadesRequest = await fetch('http://localhost:4000/api/v1/especialidade/list');
+                const especialidadeResponse = await especialidadesRequest.json();
+    
+                if(especialidadeResponse.ok){
+                    setEspecialidades(especialidadeResponse.especialidades);
+                }
             }
+    
+            getData();
         }
-
-        getData();
 
     },[]);
 
@@ -107,7 +112,7 @@ export default function MarcarConsulta(){
                     </div>
 
                     <div className="marcar-consulta-form-button">
-                        <button className="marcar-consulta-btn" onClick={ marcarConsultaHandler }>Confirmar</button>
+                        <button className="marcar-consulta-btn" onClick={ marcarConsultaHandler }>Confirmar Solicitação</button>
                     </div>
                 </form>
 

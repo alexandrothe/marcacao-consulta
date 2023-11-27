@@ -94,8 +94,31 @@ export const getSolicitacao = async (req:Request, res: Response, next:NextFuncti
     }
 }
 
+export const getSolicitacoesMedico = async(req: Request, res: Response, next: NextFunction) => {
+    const {medicoId} = req.params;
 
-export const getSolicitacaoList = async (req:Request, res: Response, next:NextFunction) => {
+    try{
+
+        const solicitacaoList = await solicitacaoRepo.find({
+            where:{
+                medicoId: parseInt(medicoId)
+            },
+            relations:{
+                medico:true,
+                usuario:true,
+                especialidade:true,
+                agendamento:true,
+            }
+        });
+
+        res.json({ ok: true, solicitacaoes: solicitacaoList});
+
+    }catch(err){
+        next(err);
+    }
+}
+
+export const getSolicitacoesPaciente = async (req:Request, res: Response, next:NextFunction) => {
 
     try{
         const { userId } = req.params;
@@ -107,7 +130,8 @@ export const getSolicitacaoList = async (req:Request, res: Response, next:NextFu
             relations:{
                 medico:true,
                 usuario:true,
-                especialidade:true
+                especialidade:true,
+                agendamento:true,
             }
         });
 

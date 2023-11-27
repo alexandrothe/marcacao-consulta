@@ -1,50 +1,72 @@
-import { useState } from 'react';
-import { LuLogOut, LuUser, LuX } from "react-icons/lu";
-import { FaBars, FaPlus} from 'react-icons/fa6';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { LuLogOut, LuPlus, LuUser} from "react-icons/lu";
+import { Outlet, useNavigate, Link } from 'react-router-dom';
+import { getCookie, deleteCookie} from "../../utils/cookieManager"
 import "./Header.scss";
 
 
 export default function Header(){
-    const [isNavigationVisible, setIsNavigationVisible ] = useState(false);
     const navigate = useNavigate();
-  
+
+    const [ userType, setUserType] = useState('');
+
+    function logoutHandler () {
+        deleteCookie('user');
+        navigate('/login');
+    }
+
+    useEffect(() => {
+        const userCookie = getCookie('user');
+
+        if(!userCookie){
+            navigate('/login');
+        }
+        else{
+            const { crmCode } = JSON.parse(userCookie);
+        
+            if(crmCode === undefined){
+                setUserType('PACIENTE');
+            }
+            else{
+                setUserType('MEDICO');
+            }
+        }
+
+
+    },[]);
+
     return(
         <>
             <header>
-                <div className='header-col1'>
-                    <div className='header-hamburguer' onClick={ () => setIsNavigationVisible( prev => !prev)}>
-                        { isNavigationVisible ? <LuX/> : <FaBars /> }
+                <div className='header-content'>
+                    <div className='header-col2'>
+                        <div className='header-logo-name'>
+                            <Link to='/'>
+                                <h1>Hospital</h1>
+                            </Link>
+                        </div>
                     </div>
+
+                    <nav className='header-navigation'>
+                        <ul className='navigation-links'>
+                            <li className='link-item' title='profile'>
+                                <Link to='/profile'>
+                                    <LuUser />
+                                </Link>
+                            </li>
+                            {userType==="PACIENTE" && (
+                                <li className='link-item' title="marcar consulta">
+                                    <Link to="/marcar-consulta" >
+                                        <LuPlus />
+                                    </Link>
+                                </li>
+                            )}
+                            <li className='link-item-btn' title="sair" onClick={ logoutHandler}>
+                                <LuLogOut />
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <div className='header-col2'>
-                    <div className='header-logo-name'>
-                        <a href='/'>
-                        <h1>Facebook</h1>
-                        </a>
-                    </div>
-                </div>
-                <div className='header-col3'>
-                    <div className='marcar-solicitacao-btn' onClick={ () => navigate('/marcar-consulta')}>
-                        <FaPlus />
-                    </div>
-                </div>
-                <nav className={`dropdown-navigation ${isNavigationVisible ? "open" : "close" }`}>
-                    <ul className='dropdown-links-container'>
-                        <li className='dropdown-link-item'>
-                            <a href='/profile'>
-                                <div className='dropdown-item-icon'><LuUser /></div>
-                                Minha Conta
-                            </a>
-                        </li>
-                        <li className='dropdown-link-item'>
-                            <a href='/'>
-                                <div className='dropdown-item-icon'><LuLogOut /></div>
-                                Sair
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             </header>
             
             <Outlet />
