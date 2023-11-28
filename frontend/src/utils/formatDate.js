@@ -23,11 +23,11 @@ export const convertDateToDDMMYYYY = (date) => {
 }
 
 /**
- * check if the date provided by the user is valid
+ * check if the birthday provided by the user is valid
  * @param {string} date - date of format dd/mm/yy 
  * @returns {boolean}
  */
-export const checkDate = (date) => {
+export const checkBirthdayDate = (date) => {
     const currentDate = new Date().toISOString().split('T')[0];
 
     const [currentYear, currentMonth, currentDay] = currentDate.split('-');
@@ -44,15 +44,44 @@ export const checkDate = (date) => {
     }
     // check if the year provided by the user is less then currentYear
     // and if the month is greater than current month
-    else if (year <= currentYear && month > currentMonth){
+    else if (month > 12 || month < 1){
         return false;
     }
     // check if the year and month provided by the user are less then current Year and Month
     // and if the day is greater than current day   
-    else if ( year <= currentYear && month <= currentMonth && day > currentDay){
+    else if (day < 1 || day > 31){
         return false;
     }
     // if got here, means the birthday is Ok.
+    else {
+        return true;
+    }
+}
+
+/**
+ * check if the agendamento date  provided by the user is valid
+ * @param {string} date - date of format dd/mm/yy 
+ * @returns {boolean}
+ */
+export const checkAgendamentoDate = (date) => {
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    const [currentYear, currentMonth, currentDay] = currentDate.split('-');
+    const [ day, month, year ] = date.split('/');
+  
+
+    if(!day || !month || !year){
+        return false;
+    }
+    else if(year < currentYear){
+        return false;
+    }
+    else if ( year == currentYear && (month > 12 || month < currentMonth) ){
+        return false;
+    }
+    else if ( month == currentMonth && (day < currentDay || day > 31)){
+        return false;
+    }
     else {
         return true;
     }

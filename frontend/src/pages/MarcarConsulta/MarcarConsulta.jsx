@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { getCookie} from "../../utils/cookieManager";
 import { checkForm } from "../../utils/checkForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./MarcarConsulta.scss";
 
 export default function MarcarConsulta(){
     const [ formError, setFormError ] = useState({ target: "", message: ""});
     const [especialidades, setEspecialidades ] = useState([]);
     const [medicos, setMedicos ] = useState([]);
+    const [ actionName, setActionName ] = useState('MARCAR_CONSULTA');
     const navigate = useNavigate();
+    const { solicitacaoId } = useParams();
     const [marcarConsulta, setMarcarcarConsulta] = useState({
         especialidadeId: "", medicoId: "", description: "", usuarioId: ""
     });
@@ -26,18 +28,35 @@ export default function MarcarConsulta(){
         const isFormOk = checkForm(marcarConsulta, setFormError);
 
         if(isFormOk){
-            const marcarConsultaRequest = await fetch("http://localhost:4000/api/v1/solicitacao/create",{
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                method: "POST",
-                body: JSON.stringify(marcarConsulta)
-            });
-            const marcarConsultaResponse = await marcarConsultaRequest.json();
+            if(actionName === "MARCAR_CONSULTA"){
+                const marcarConsultaRequest = await fetch("http://localhost:4000/api/v1/solicitacao/create",{
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    method: "POST",
+                    body: JSON.stringify(marcarConsulta)
+                });
+                const marcarConsultaResponse = await marcarConsultaRequest.json();
+    
+    
+                if(marcarConsultaResponse.ok){
+                    navigate('/')
+                }
+            }
+            else{
+                const atualizarConsultaRequest = await fetch(`http://localhost:4000/api/v1/solicitacao/update/${solicitacaoId}`,{
+                    headers:{
+                        "Content-Type": "application/json"
+                    },
+                    method: "PUT",
+                    body: JSON.stringify(marcarConsulta)
+                });
 
+                const atualizarConsultaResponse = await atualizarConsultaRequest.json();
+                if(atualizarConsultaResponse.ok){
+                    navigate('/');
+                }
 
-            if(marcarConsultaResponse.ok){
-                navigate('/')
             }
         }
     }
@@ -56,6 +75,26 @@ export default function MarcarConsulta(){
     
                 if(especialidadeResponse.ok){
                     setEspecialidades(especialidadeResponse.especialidades);
+                    let action = document.location.href.split('/')[document.location.href.split('/').length - 1];
+
+                    if(action.toLocaleLowerCase() === "update-consulta"){
+
+                        const getOneConsultaRequest = await fetch(`http://localhost:4000/api/v1/solicitacao/one/${solicitacaoId}`);
+                        const getOneConsultaResponse = await getOneConsultaRequest.json();
+
+                        if(getOneConsultaResponse.ok){
+                            const {medicoId, usuarioId, description,especialidadeId} = getOneConsultaResponse.solicitacao;
+                            setMarcarcarConsulta({
+                                medicoId,
+                                usuarioId,
+                                description,
+                                especialidadeId
+                            });
+                            loadMedicos(especialidadeId);
+                            setActionName('UPDATE_CONSULTA')
+                        }
+                    }
+
                 }
             }
     
@@ -79,33 +118,44 @@ export default function MarcarConsulta(){
                         <label>Especialidade: </label>
                         <select
                             className="form-item-select"
+                            value={marcarConsulta.especialidadeId}
                             onChange={ (e) => {
                                 setMarcarcarConsulta( prev => ({...prev, especialidadeId: parseInt(e.target.value) }))
                                 loadMedicos(e.target.value);
                             }}
                         >
                             <option>selecione</option>
-                            {especialidades.map( (especialidade, index) => (
-                                <option value={especialidade.id} key={especialidade.nome}>{especialidade.nome}</option>
-                            ))}
+                            {especialidades.map( (especialidade, index) => {
+                                if(especialidade.id === marcarConsulta.especialidadeId){
+                                    return <option value={especialidade.id} key={especialidade.nome}>{especialidade.nome}</option>
+                                }else{
+                                    return <option value={especialidade.id} key={especialidade.nome}>{especialidade.nome}</option>
+                                }
+                            })}
                         </select>
                     </div>
                     <div className="marcar-consulta-form-item">
                         <label>Medico: </label>
                         <select
                             className="form-item-select"
+                            value={marcarConsulta.medicoId}
                             onChange={ (e) => setMarcarcarConsulta( prev => ({...prev, medicoId: parseInt(e.target.value) }))}
                         >
                             <option>selecione</option>
-                            {medicos.map( (medico, index) => (
-                                <option value={medico.id} key={medico.name}>{medico.name}</option>
-                            ))}
+                            {medicos.map( (medico, index) => {
+                                if(medico.id === marcarConsulta.medicoId){
+                                    return <option value={medico.id} key={medico.name}>{medico.name}</option>
+                                }else{
+                                    return <option value={medico.id} key={medico.name}>{medico.name}</option>
+                                }
+                            })}
                         </select>
                     </div>
                     <div className="marcar-consulta-form-item">
                         <label>Motivo da consulta: </label>
                         <textarea
                             className="form-item-textarea"
+                            value={marcarConsulta.description}
                             onChange={ e => setMarcarcarConsulta( prev => ({ ...prev, description: e.target.value}))}
                         >
                         </textarea>

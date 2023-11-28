@@ -18,6 +18,9 @@ export class AgendamentoConsulta{
 
     @Column({ type: "date", nullable: false})
     dtAgendamento: Date
+
+    @Column({ type: "time", nullable: false})
+    hrAgendamento: Date
     
     @OneToOne( () => SolicitacaoConsulta, ( solicitacao) => solicitacao.agendamento, { onDelete: "CASCADE"})
     @JoinColumn({ name: "solicitacaoId" })

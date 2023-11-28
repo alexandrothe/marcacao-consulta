@@ -1,0 +1,65 @@
+
+.agendar-solicitacao-form{
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  
+  
+    .agendar-form-item{
+      display: flex;
+      row-gap: 10px;
+      flex-direction: column;
+  
+      label{
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+      
+      input{
+        height: 40px;
+        padding: 0 10px;
+        border: 2px solid rgb(201, 198, 198);
+        border-radius: 5px;
+        color: rgb(22, 21, 21);
+        font-size: 18px;
+        &:focus{
+          outline: none;
+        }
+      }
+  
+      p{
+        font-size: 14px;
+        color: red;
+        letter-spacing: 1px;
+      }
+  
+      .agendar-form-hora{
+        display: flex;
+        // grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+  
+        max-width: 75%;
+        
+        span{
+          font-size: 20px;
+          font-weight: 600;
+        }
+        input{
+          width: 100%;
+          appearance: none;
+          -moz-appearance: textfield;
+          
+          &::-webkit-inner-spin-button, 
+          &::-webkit-outer-spin-button{
+            --webkit-appearence:none;
+          }
+        }
+      }
+    }
+  }
+  
+  
+  

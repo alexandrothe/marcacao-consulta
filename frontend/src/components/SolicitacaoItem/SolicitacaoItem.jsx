@@ -1,18 +1,21 @@
-import { FaUserDoctor } from "react-icons/fa6";
+import { FaUser, FaUserDoctor } from "react-icons/fa6";
 import { FaCalendarAlt } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaRedo } from "react-icons/fa";
 import PopUp from "../PopUp/PopUp";
 import { useState } from "react";
-import { checkDate, convertDateToDDMMYYYY, convertDateToYYYYMMDD } from "../../utils/formatDate";
+import { checkAgendamentoDate, convertDateToDDMMYYYY, convertDateToYYYYMMDD } from "../../utils/formatDate";
+import { validateTime } from "../../utils/validateTime";
+import AgendamentoForm from "../AgendamentoForm/AgendamentoForm";
 import "./SolicitacaoItem.scss";
-
+import { Link } from "react-router-dom";
 
 const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
   const [popUpStatus,setPopUpStatus] = useState(false);
-  const [agendamentoDate, setAgendamentoDate] = useState("");
+  const [agendamentoDate, setAgendamentoDate] = useState({dtAgendamento: "", hour: "", min: ""});
   const [ formError, setFormError] = useState({target:"", message: ""});
   const { medico, especialidade, agendamento, usuario, } = solicitacao;
+  const [hour, min] = agendamento.hrAgendamento.split(':');
 
   
   const deleteSolicitacaoHandler = async () => {
@@ -26,11 +29,12 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
   }
 
   const agendarSolicitacaoHandler = async () => {
+    const {dtAgendamento, hour, min} = agendamentoDate;
+    const isDateOk = checkAgendamentoDate(dtAgendamento);
+    const isTimeOk = validateTime(`${hour}:${min}`);
 
-    const isDateOk = checkDate(agendamentoDate);
-
-    if(isDateOk){
-      const formatedDate = convertDateToYYYYMMDD(agendamentoDate); // DD/MM/YYYY to YYYY/MM/DD
+    if(isDateOk && isTimeOk){
+      const formatedDate = convertDateToYYYYMMDD(dtAgendamento); // DD/MM/YYYY to YYYY/MM/DD
 
       const agendarSolicitacaoRequest = await fetch(`http://localhost:4000/api/v1/agendamento/create`,{
         headers: {
@@ -40,7 +44,8 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
         body: JSON.stringify({
           solicitacaoId: solicitacao.id,
           usuarioId: usuario.id,
-          dtAgendamento: formatedDate
+          dtAgendamento: formatedDate,
+          hrAgendamento: `${hour}:${min}:00`
         })
       });
 
@@ -50,10 +55,16 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
         location.reload();
       }
     }
-    else{
+    else if (!isDateOk){
       setFormError({ 
         target: "DATA_CONSULTA",
         message: "Data da consulta está inválida"
+      });
+    }
+    else{
+      setFormError({ 
+        target: "HORA_CONSULTA",
+        message: "Hora da consulta está inválida"
       });
     }
   }
@@ -70,7 +81,6 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
     }
 
   }
-  
 
   return(
     <>
@@ -81,10 +91,21 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
         </div>
         <div className='solicitacao-item-information'>
           <div className='solicitacao-info-medico'>
-            <div className='medico-icon'>
-              <FaUserDoctor />
-            </div>
-            <p>Dr. {medico.name}</p>
+            {tipoUsuario === "PACIENTE" ? (
+              <>
+                <div className="medico-icon">
+                  <FaUserDoctor />
+                </div>
+                <p>Dr. {medico.name}</p>
+              </>
+            ):(
+              <>
+                <div className="paciente-icon">
+                  <FaUser />
+                </div>
+                <p>{usuario.name}</p>
+              </>
+            )}
           </div>
 
           <div className='solicitacao-info-data'>
@@ -97,15 +118,25 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
           <div className='solicitacao-info-situacao'>
             <h4>Situação:</h4>
             { agendamento ? (
-              <>
-                <p className="agendamento">Agendado</p>
-              </>
+              <p className="agendamento">Agendado</p>
             ):(
               <p className='analise'>Em analíse</p>
             )}
           </div>
-          
 
+          { agendamento && (
+            <div className="agendamento-info">
+              <div className="agendamento-info-date">
+                <h4>Data Agendamento: </h4>
+                <p>{convertDateToDDMMYYYY(agendamento.dtAgendamento)}</p>
+              </div>
+              <div className="agendamento-info-time">
+                <h4>Hora Agendamento: </h4>
+                <p>{`${hour}:${min}`}</p>
+              </div>
+            </div>
+          )}
+        
           <div className="solicitacao-info-motivo">
             <h4>Motivo da soliticação: </h4>
             <p>{solicitacao.description}</p>
@@ -114,63 +145,43 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
           <div className='solicitacao-item-buttons'>
             { tipoUsuario === "PACIENTE" ? (
               <>
-                <button className='update-solicitacao-btn'>
+                <Link to={`${solicitacao.id}/update-consulta`} className='update-solicitacao-btn'>
                   <FaRedo />
-                </button>
+                </Link>
                 <button className='delete-solicitacao-btn' onClick={ deleteSolicitacaoHandler }>
                   <FaRegTrashAlt />
                 </button>
               </>
             ):(
               <>
-                {agendamento && (
-                  <button className="deletar-agendamento-btn" onClick={ deletarAgendamentoHandler }>
-                    cancelar agendamento
+                {agendamento ? (
+                  <>
+                    <button className="update-agendamento-btn">
+                      <FaRedo />
+                    </button>
+                    <button className="deletar-agendamento-btn" onClick={ deletarAgendamentoHandler }>
+                      cancelar agendamento
+                    </button>
+                  </>
+                ):(
+                  <button className="agendar-solicitacao-btn" onClick={ () => setPopUpStatus(true)}>
+                    agendar 
                   </button>
                 )}
-                <button className="agendar-solicitacao-btn" onClick={ () => setPopUpStatus(true)}>
-                  agendar 
-                </button>
               </>
             )}
           </div>
         </div>
       </div>
       <PopUp
-        headerName={"Agendar Solicitação"}
+        headerName={"Agendar Consulta"}
         popUpStatus={popUpStatus}
         setPopUpStatus={setPopUpStatus}
-        popUpConfirmHandler={ agendarSolicitacaoHandler }
-      >
-          <form className="agendar-solicitacao-form" onSubmit={ e => e.preventDefault() }>
-              <div className="agendar-form-item">
-                <label htmlFor="date-input">Data para Consulta:</label>
-                <input
-                  type="text"
-                  id="date-input"
-                  maxLength={10}
-                  value={agendamentoDate}
-                  placeholder="dia / mes / ano"
-                  onChange={ (e) => {
-                    setAgendamentoDate( prev => {
-
-                      if(e.target.value.length < prev.length){
-                        return e.target.value;
-                      }
-
-                      if(e.target.value.length === 2 || e.target.value.length === 5){
-                        return e.target.value + '/'
-                      }
-                      
-                      return e.target.value
-                    });
-                  }}
-                />
-                {formError.target === "DATA_CONSULTA" && (
-                  <p>{formError.message}</p>
-                )}
-              </div>
-          </form>
+        popUpConfirmHandler={ agendarSolicitacaoHandler }>
+        <AgendamentoForm
+          setAgendamentoDate={setAgendamentoDate}
+          agendamentoDate={agendamentoDate}
+          formError={formError}/>
       </PopUp>
     </>
     );
