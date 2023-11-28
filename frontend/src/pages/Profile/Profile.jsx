@@ -8,20 +8,35 @@ import "./Profile.scss";
 
 export default function Profile(){
     const [userInformation, setUserInformation] = useState({
-        name: "", password:"", birthDay: "", sex: "", accessCredential: "", 
+        name: "", password:"", birthDay: "", sex: "", accessCredential: "", especialidadeId: ""
     });
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [especialidades, setEspecialidades] = useState([]);
     const [userType, setUserType] = useState("");
+    
+    useEffect( ( ) => {
+        
+        async function getData(){
+            const getEspecialiadesRequest = await fetch('http://localhost:4000/api/v1/especialidade/list');
+            const getEspecialdadeResponse = await getEspecialiadesRequest.json();
 
+            if(getEspecialdadeResponse.ok){
+                setEspecialidades(getEspecialdadeResponse.especialidades);
+            }
+        }
+
+        getData();
+
+    },[]);
     useEffect( () => {
         const userCookie = getCookie('user');
 
         if(userCookie){
-            const {crmCode, cardNumber, ...restUser} = JSON.parse(userCookie);
+            const {crmCode, cardNumber, especialidadeId, ...restUser} = JSON.parse(userCookie);
      
             
             if(crmCode !== undefined){
-                setUserInformation({...restUser, accessCredential: crmCode });
+                setUserInformation({...restUser, accessCredential: crmCode, especialidadeId:especialidadeId  });
                 setUserType('MEDICO');
             }
             else{
@@ -37,14 +52,16 @@ export default function Profile(){
         
         let formatedInformation = {}
         
-        const {accessCredential, ...restInformation} = userInformation;
+        const {accessCredential, especialidadeId, ...restInformation} = userInformation;
 
         if(userType === "MEDICO"){
-            formatedInformation = {...restInformation, crmCode: accessCredential}
+            formatedInformation = {...restInformation, crmCode: accessCredential, especialidadeId: especialidadeId}
         }else{
             formatedInformation = {...restInformation, cardNumber: accessCredential}
         }
 
+
+        console.log(formatedInformation)
 
         const formatedUserInformation = noEmptyKeyValues(formatedInformation);
 
@@ -69,6 +86,7 @@ export default function Profile(){
                 else{
                     setCookie('user', JSON.stringify(updateUserResponse.user)); // update user information on cookie;
                 }
+                location.reload()
             }
         }
         
@@ -113,15 +131,28 @@ export default function Profile(){
                             />
                         </div>
                         { userType === "MEDICO" ? (
-                            <div className="credentials-form-item">
-                                <label htmlFor="crm-codigo-input">Codígo CRM:</label>
-                                <input
-                                    type="text"
-                                    id="crm-codigo-input"
-                                    value={userInformation.accessCredential}
-                                    onChange={ (e) => setUserInformation( prev => ({ ...prev, accessCredential: e.target.value})) }
-                                />
-                            </div>
+                            <>
+                                <div className="credentials-form-item">
+                                    <label htmlFor="crm-codigo-input">Codígo CRM:</label>
+                                    <input
+                                        type="text"
+                                        id="crm-codigo-input"
+                                        value={userInformation.accessCredential}
+                                        onChange={ (e) => setUserInformation( prev => ({ ...prev, accessCredential: e.target.value})) }
+                                    />
+                                </div>
+                                <div className="credentials-form-item">
+                                    <label>Especialidade: </label>
+                                    <select
+                                        value={userInformation.especialidadeId}
+                                        onChange={ (e) => setUserInformation( prev => ({...prev, especialidadeId: parseInt(e.target.value) })) }
+                                    >
+                                        {especialidades.map( (especialiade, index) => (
+                                            <option value={especialiade.id} key={especialiade.nome}>{especialiade.nome}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </>
                         ):(
                             <div className="credentials-form-item">
                                 <label htmlFor="cartao-saude-input">Cartão de Saúde </label>

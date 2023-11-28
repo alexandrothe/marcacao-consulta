@@ -3,7 +3,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaRedo } from "react-icons/fa";
 import PopUp from "../PopUp/PopUp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { checkAgendamentoDate, convertDateToDDMMYYYY, convertDateToYYYYMMDD } from "../../utils/formatDate";
 import { validateTime } from "../../utils/validateTime";
 import AgendamentoForm from "../AgendamentoForm/AgendamentoForm";
@@ -14,8 +14,8 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
   const [popUpStatus,setPopUpStatus] = useState(false);
   const [agendamentoDate, setAgendamentoDate] = useState({dtAgendamento: "", hour: "", min: ""});
   const [ formError, setFormError] = useState({target:"", message: ""});
+  const [ agendamentoAction, setAgendamentoAction] = useState('AGENDAR_SOLICITACAO'); // AGENDAR_SOLICITACAO  or ATUALIZAR_AGENDAMENTO
   const { medico, especialidade, agendamento, usuario, } = solicitacao;
-  const [hour, min] = agendamento.hrAgendamento.split(':');
 
   
   const deleteSolicitacaoHandler = async () => {
@@ -36,24 +36,44 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
     if(isDateOk && isTimeOk){
       const formatedDate = convertDateToYYYYMMDD(dtAgendamento); // DD/MM/YYYY to YYYY/MM/DD
 
-      const agendarSolicitacaoRequest = await fetch(`http://localhost:4000/api/v1/agendamento/create`,{
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          solicitacaoId: solicitacao.id,
-          usuarioId: usuario.id,
-          dtAgendamento: formatedDate,
-          hrAgendamento: `${hour}:${min}:00`
-        })
-      });
-
-      const agendarSolicitacaoResponse = await agendarSolicitacaoRequest.json();
+      if(agendamentoAction === "AGENDAR_SOLICITACAO"){
+        const agendarSolicitacaoRequest = await fetch(`http://localhost:4000/api/v1/agendamento/create`,{
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            solicitacaoId: solicitacao.id,
+            usuarioId: usuario.id,
+            dtAgendamento: formatedDate,
+            hrAgendamento: `${hour}:${min}:00`
+          })
+        });
   
-      if(agendarSolicitacaoResponse.ok){
-        location.reload();
+        const agendarSolicitacaoResponse = await agendarSolicitacaoRequest.json();
+    
+        if(agendarSolicitacaoResponse.ok){
+          location.reload();
+        }
+      }else{
+        const atualizarAgendamentoRequest = await fetch(`http://localhost:4000/api/v1/agendamento/update/${agendamento.id}`,{
+          headers:{
+            "Content-Type":"application/json"
+          },
+          method: "PUT",
+          body: JSON.stringify({
+            dtAgendamento: formatedDate,
+            hrAgendamento: `${hour}:${min}`
+          })
+        });
+        
+        const atualizarAgendamentoResponse = await atualizarAgendamentoRequest.json();
+
+        if(atualizarAgendamentoResponse.ok){
+          location.reload();
+        }
       }
+
     }
     else if (!isDateOk){
       setFormError({ 
@@ -70,7 +90,6 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
   }
 
   const deletarAgendamentoHandler = async () => {
-    
     const deletarAgendamentoRequest = await fetch(`http://localhost:4000/api/v1/agendamento/delete/${agendamento.id}`,{
       method: "DELETE"
     });
@@ -132,7 +151,7 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
               </div>
               <div className="agendamento-info-time">
                 <h4>Hora Agendamento: </h4>
-                <p>{`${hour}:${min}`}</p>
+                <p>{`${agendamento.hrAgendamento.split(':')[0]}:${agendamento.hrAgendamento.split(':')[1]}`}</p>
               </div>
             </div>
           )}
@@ -154,10 +173,20 @@ const SolicitacaoItem = ({ solicitacao, tipoUsuario }) => {
               </>
             ):(
               <>
-                {agendamento ? (
+                { agendamento? (
                   <>
-                    <button className="update-agendamento-btn">
-                      <FaRedo />
+                    <button
+                      className="update-agendamento-btn"
+                      onClick={ () => {
+                        setAgendamentoDate({
+                          dtAgendamento: convertDateToDDMMYYYY(agendamento.dtAgendamento),
+                          hour: agendamento.hrAgendamento.split(':')[0],
+                          min: agendamento.hrAgendamento.split(':')[1]
+                        })
+                        setAgendamentoAction("ATUALIZAR_AGENDAMENTO")
+                        setPopUpStatus(true)
+                      }}>
+                      editar agendamento
                     </button>
                     <button className="deletar-agendamento-btn" onClick={ deletarAgendamentoHandler }>
                       cancelar agendamento

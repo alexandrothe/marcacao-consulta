@@ -9,6 +9,7 @@ export default function Header(){
     const navigate = useNavigate();
 
     const [ userType, setUserType] = useState('');
+    const [ userName, setUserName ] = useState("");
 
     function logoutHandler () {
         deleteCookie('user');
@@ -22,8 +23,9 @@ export default function Header(){
             navigate('/login');
         }
         else{
-            const { crmCode } = JSON.parse(userCookie);
+            const { crmCode, name } = JSON.parse(userCookie);
         
+            setUserName(name);
             if(crmCode === undefined){
                 setUserType('PACIENTE');
             }
@@ -42,7 +44,7 @@ export default function Header(){
                     <div className='header-col2'>
                         <div className='header-logo-name'>
                             <Link to='/'>
-                                <h1>Hospital</h1>
+                                {userType === "PACIENTE" ? (<h1>Olá, {userName}</h1>): (<h1>Olá, Dr. {userName} </h1>)}
                             </Link>
                         </div>
                     </div>
